@@ -148,39 +148,50 @@ FBX.BrowserHandler.prototype = {
 		this.browser.removeProgressListener(this);
 	},
 	
+	seekPosition: function(pos, start, end)
+	{
+		if (typeof(start) == "undefined")
+			start = 0;
+		if (typeof(end) == "undefined")
+			end = this.nodeContent.length-1;
+			
+		if (start == end)
+		{
+			this._log("Found in "+start);
+			return start;
+		}
+
+		var shift = pos-this.nodeContent[start].offset;
+		var diff = this.nodeContent[end].offset-this.nodeContent[start].offset;
+		var mid = parseInt((end-start)*(shift/diff))+start;
+
+		this._log("Seeking "+start+" "+end+" "+mid);
+		if (this.nodeContent[mid].offset>pos)
+			return this.seekPosition(pos, start, mid-1);
+		if ((this.nodeContent[mid].offset+this.nodeContent[mid].node.nodeValue.length)<=pos)
+			return this.seekPosition(pos, mid+1, end);
+		this._log("Found in "+mid);
+		return mid;
+	},
+	
 	test: function()
 	{
 		var time = Date.now();
-		var seek = "47 const";
+		var seek = "onProgress: function";
 		var pattern = new RegExp(seek);
 		var result = pattern.exec(this.textContent);
 		if (result)
 		{
 			this._log("Found at position "+result.index);
-			var start = { pos: result.index };
-			var end = {pos: result.index+result[0].length };
-			
-			for (var i in this.nodeContent)
-			{
-				var pos = parseInt(i);
-				var node = this.nodeContent[i];
-				if ((pos<=start.pos) && ((pos+node.nodeValue.length)>start.pos))
-				{
-					start.node = node;
-					start.offset = start.pos-pos;
-				}
-				if ((pos<=end.pos) && ((pos+node.nodeValue.length)>end.pos))
-				{
-					end.node = node;
-					end.offset = end.pos-pos;
-					break;
-				}
-			}
-			var range = start.node.ownerDocument.createRange();
-			this._log(start.offset);
-			range.setEnd(end.node, end.offset);
-			range.setStart(start.node, start.offset);
-			var sel = start.node.ownerDocument.defaultView.getSelection();
+
+			var range = this.browser.contentDocument.createRange();
+
+			var node = this.seekPosition(result.index);
+			range.setStart(this.nodeContent[node].node, result.index-this.nodeContent[node].offset);
+			node = this.seekPosition(result.index+result[0].length, node);
+			range.setEnd(this.nodeContent[node].node, result.index+result[0].length-this.nodeContent[node].offset);
+
+			var sel = this.browser.contentWindow.getSelection();
 			sel.removeAllRanges();
 			sel.addRange(range);
 		}
@@ -239,7 +250,10 @@ FBX.BrowserHandler.prototype = {
 		{
 			if (node.nodeType == Node.TEXT_NODE)
 			{
-				this.nodeContent[this.textContent.length] = node;
+				this.nodeContent[this.nodeContent.length] = {
+					offset: this.textContent.length,
+					node: node
+				};
 				this.textContent += node.nodeValue;
 			}
 			node=walker.nextNode();
@@ -254,7 +268,7 @@ FBX.BrowserHandler.prototype = {
 		this.nodeContent = [];
 		this.parseDocument(this.browser.contentDocument);
 		time = Date.now()-time;
-		this._log("Parse complete in "+time+"ms. Found "+this.textContent.length+" characters.");
+		this._log("Parse complete in "+time+"ms. Found "+this.textContent.length+" characters with "+this.nodeContent.length+" nodes.");
 	},
 	
 	loadComplete: function()
