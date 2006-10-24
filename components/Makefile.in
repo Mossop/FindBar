@@ -1,0 +1,16 @@
+DEPTH                 = ../..
+topsrcdir             = @top_srcdir@
+srcdir                = @srcdir@
+VPATH                 = @srcdir@
+
+include $(DEPTH)/config/autoconf.mk
+
+MODULE                = findbar
+
+DIRS                  = public src
+
+XPI_NAME              = findbar
+INSTALL_EXTENSION_ID  = findbar@blueprintit.co.uk
+XPI_PKGNAME           = findbar
+
+include $(topsrcdir)/config/rules.mk
