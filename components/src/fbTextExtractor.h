@@ -46,7 +46,6 @@
 #define _fbTextExtractor_h_
 
 #include "fbITextExtractor.h"
-#include "nsIDOMNodeFilter.h"
 #include "nsStringAPI.h"
 #include "nsCOMPtr.h"
 #include "nsTArray.h"
@@ -64,13 +63,11 @@ public:
   nsCOMPtr<nsIDOMNode> mNode;
 };
 
-class fbTextExtractor : public fbITextExtractor,
-                        public nsIDOMNodeFilter
+class fbTextExtractor : public fbITextExtractor
 {
 public:
   NS_DECL_ISUPPORTS
   NS_DECL_FBITEXTEXTRACTOR
-  NS_DECL_NSIDOMNODEFILTER
 
   fbTextExtractor();
 
@@ -80,6 +77,10 @@ private:
   nsCOMPtr<nsIDOMDocument> mDocument;
   nsTArray<fbNodeInfo> mNodeContent;
   
+  void fbTextExtractor::AddTextNode(nsIDOMNode *node, PRInt32 offset);
+  void fbTextExtractor::AddTextNode(nsIDOMNode *node, PRInt32 offset, PRInt32 length);
+  void fbTextExtractor::WalkPastTree(nsIDOMNode *current, nsIDOMNode *limit, nsIDOMNode **retval);
+  void fbTextExtractor::WalkIntoTree(nsIDOMNode *current, nsIDOMNode *limit, nsIDOMNode **retval);
   PRUint32 GetOffsetPosition(PRInt32 offset, PRInt32 start, PRInt32 end);
   PRUint32 GetOffsetPosition(PRInt32 offset, PRInt32 start);
 

@@ -51,7 +51,7 @@ interface fbITextExtractor : nsISupports
 {
   readonly attribute AString textContent;
   
-	void init(in nsIDOMDocument document);
+	void init(in nsIDOMDocument document, in nsIDOMRange range);
 	
 	nsIDOMRange getTextRange(in long offset, in long length);
 };

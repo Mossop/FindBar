@@ -46,15 +46,11 @@
 #include "nsIDOMHTMLDocument.h"
 #include "nsIDOMHTMLElement.h"
 #include "nsIDOMElement.h"
-#include "nsIDOMDocumentTraversal.h"
+#include "nsIDOMNodeList.h"
 #include "nsIDOMDocumentRange.h"
-#include "nsIDOMTreeWalker.h"
-#include "nsIDOMNodeFilter.h"
-#include <stdio.h>
 
-NS_IMPL_ISUPPORTS2(fbTextExtractor,
-                   fbITextExtractor,
-                   nsIDOMNodeFilter)
+NS_IMPL_ISUPPORTS1(fbTextExtractor,
+                   fbITextExtractor)
 
 fbTextExtractor::fbTextExtractor()
 {
@@ -77,26 +73,84 @@ NS_IMETHODIMP fbTextExtractor::GetTextContent(nsAString & aTextContent)
   return NS_OK;
 }
 
-/* short acceptNode (in nsIDOMNode n); */
-NS_IMETHODIMP fbTextExtractor::AcceptNode(nsIDOMNode *aNode, PRInt16 *retval)
+void fbTextExtractor::AddTextNode(nsIDOMNode *node, PRInt32 offset)
 {
-  *retval = nsIDOMNodeFilter::FILTER_ACCEPT;
+  nsAutoString text;
+  node->GetNodeValue(text);
+  text.Cut(0, offset);
+  fbNodeInfo nodeInfo;
+  nodeInfo.mLength = text.Length();
 
-  PRUint16 type;
-  aNode->GetNodeType(&type);
-  if (type == nsIDOMNode::ELEMENT_NODE)
+  if (nodeInfo.mLength > 0)
   {
-    nsAutoString name;
-    aNode->GetLocalName(name);
-    if (name.EqualsLiteral("script") || name.EqualsLiteral("style"))
-      *retval = nsIDOMNodeFilter::FILTER_REJECT;
+    nodeInfo.mDocumentOffset = mTextContent.Length();
+    nodeInfo.mNodeOffset = offset;
+    nodeInfo.mNode = node;
+
+    mTextContent.Append(text);
+    
+    mNodeContent.AppendElement(nodeInfo);
   }
+}
+
+void fbTextExtractor::AddTextNode(nsIDOMNode *node, PRInt32 offset, PRInt32 length)
+{
+  nsAutoString text;
+  node->GetNodeValue(text);
+  text.Cut(0, offset);
+  text.SetLength(length);
+  fbNodeInfo nodeInfo;
+  nodeInfo.mLength = text.Length();
+
+  if (nodeInfo.mLength > 0)
+  {
+    nodeInfo.mDocumentOffset = mTextContent.Length();
+    nodeInfo.mNodeOffset = offset;
+    nodeInfo.mNode = node;
+
+    mTextContent.Append(text);
+    
+    mNodeContent.AppendElement(nodeInfo);
+  }
+}
+
+void fbTextExtractor::WalkPastTree(nsIDOMNode *current, nsIDOMNode *limit, nsIDOMNode **retval)
+{
+  nsCOMPtr<nsIDOMNode> next;
+
+  do
+  {
+    if (current == limit) // Cannot move past our limit
+      break;
+
+    current->GetNextSibling(getter_AddRefs(next));
+    if (!next) // No siblings. Move out a step and try again.
+    {
+      current->GetParentNode(getter_AddRefs(next));
+      current = next;
+      next = nsnull;
+    }
+
+  } while ((!next) && (current)); // Until we find a node or run out of nodes.
   
-  return NS_OK;
+  NS_ASSERTION(current, "Ran out of nodes before hitting limit");
+  
+  NS_IF_ADDREF(*retval = next);
+}
+
+void fbTextExtractor::WalkIntoTree(nsIDOMNode *current, nsIDOMNode *limit, nsIDOMNode **retval)
+{
+  nsCOMPtr<nsIDOMNode> next;
+
+  current->GetFirstChild(getter_AddRefs(next)); // Attempt to recurse in
+  if (!next)
+    WalkPastTree(current, limit, getter_AddRefs(next));
+  
+  NS_IF_ADDREF(*retval = next);
 }
 
 /* void init (in nsIDOMDocument document); */
-NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc)
+NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc, nsIDOMRange *aRange)
 {
   if (!aDoc)
     return NS_ERROR_INVALID_ARG;
@@ -106,50 +160,94 @@ NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc)
 	mDocument = nsnull;
 	mTextContent.Truncate();
 	
-	nsCOMPtr<nsIDOMElement> root;
-  nsCOMPtr<nsIDOMHTMLDocument> htmlDoc = do_QueryInterface(aDoc, &rv);
-  if (NS_SUCCEEDED(rv))
+	PRBool inrange = PR_TRUE;
+  nsCOMPtr<nsIDOMNode> currentNode;
+  nsCOMPtr<nsIDOMNode> end;
+  PRInt32 startOffset = 0;
+  PRInt32 endOffset = 0;
+  if (!aRange)
   {
-  	nsCOMPtr<nsIDOMHTMLElement> htmlRoot;
-  	htmlDoc->GetBody(getter_AddRefs(htmlRoot));
-    root = do_QueryInterface(htmlRoot, &rv);
-    if (NS_FAILED(rv)) return rv;
+    nsCOMPtr<nsIDOMHTMLDocument> htmlDoc = do_QueryInterface(aDoc, &rv);
+    if (NS_SUCCEEDED(rv))
+    {
+    	nsCOMPtr<nsIDOMHTMLElement> eleRoot;
+    	rv = htmlDoc->GetBody(getter_AddRefs(eleRoot));
+      if (NS_FAILED(rv)) return rv;
+      end = do_QueryInterface(eleRoot, &rv);
+      if (NS_FAILED(rv)) return rv;
+    }
+    else
+    {
+    	nsCOMPtr<nsIDOMElement> eleRoot;
+    	rv = aDoc->GetDocumentElement(getter_AddRefs(eleRoot));
+      if (NS_FAILED(rv)) return rv;
+      end = do_QueryInterface(eleRoot, &rv);
+      if (NS_FAILED(rv)) return rv;
+    }
+    if (!end)
+    {
+      mDocument = aDoc;
+      return NS_OK;
+    }
+    end->GetFirstChild(getter_AddRefs(currentNode));
+    if (!currentNode)
+    {
+      mDocument = aDoc;
+      return NS_OK;
+    }
   }
   else
   {
-  	aDoc->GetDocumentElement(getter_AddRefs(root));
+    PRUint16 type;
+    nsCOMPtr<nsIDOMNodeList> children;
+
+    aRange->GetEndContainer(getter_AddRefs(end));
+    end->GetNodeType(&type);
+    aRange->GetEndOffset(&endOffset);
+
+    if (type == nsIDOMNode::ELEMENT_NODE)
+    {
+      end->GetChildNodes(getter_AddRefs(children));
+      children->Item(endOffset-1, getter_AddRefs(end));
+    }
+
+    aRange->GetStartContainer(getter_AddRefs(currentNode));
+    currentNode->GetNodeType(&type);
+    aRange->GetStartOffset(&startOffset);
+    
+    if ((type == nsIDOMNode::ELEMENT_NODE) && (startOffset>0))
+    {
+      currentNode->GetChildNodes(getter_AddRefs(children));
+      PRUint32 length;
+      children->GetLength(&length);
+      if (startOffset<length)
+        children->Item(startOffset, getter_AddRefs(currentNode));
+      else if (length > 0)
+      {
+        nsCOMPtr<nsIDOMNode> nextNode;
+        WalkPastTree(currentNode, end, getter_AddRefs(nextNode));
+        currentNode = nextNode;
+      }
+      startOffset = 0;
+    }
   }
   
-	nsCOMPtr<nsIDOMDocumentTraversal> trav = do_QueryInterface(aDoc, &rv);
-	if (NS_FAILED(rv)) return rv;
-
-	nsCOMPtr<nsIDOMTreeWalker> walker;
-	rv = trav->CreateTreeWalker(root, 
-                              nsIDOMNodeFilter::SHOW_TEXT | nsIDOMNodeFilter::SHOW_ELEMENT,
-                              this, PR_TRUE, getter_AddRefs(walker));
-  if (NS_FAILED(rv)) return rv;
-  
-  nsCOMPtr<nsIDOMNode> currentNode;
-  walker->GetCurrentNode(getter_AddRefs(currentNode));
   while (currentNode)
   {
     PRUint16 type;
     currentNode->GetNodeType(&type);
+    
     if (type == nsIDOMNode::TEXT_NODE)
     {
-      fbNodeInfo nodeInfo;
-      nodeInfo.mDocumentOffset = mTextContent.Length();
-      nodeInfo.mNodeOffset = 0;
-      nodeInfo.mNode = currentNode;
-      
-      nsAutoString text;
-      currentNode->GetNodeValue(text);
-      mTextContent.Append(text);
-      nodeInfo.mLength = text.Length();
-      
-      mNodeContent.AppendElement(nodeInfo);
+      if (currentNode != end)
+        AddTextNode(currentNode, startOffset);
+      else
+        AddTextNode(currentNode, startOffset, endOffset);
     }
-  	walker->NextNode(getter_AddRefs(currentNode));
+    startOffset = 0;
+    nsCOMPtr<nsIDOMNode> nextNode;
+    WalkIntoTree(currentNode, end, getter_AddRefs(nextNode));
+    currentNode = nextNode;
   }
   mDocument = aDoc;
   
