@@ -47,4 +47,8 @@
        
   <script type="application/x-javascript" src="findbar.js" />
 
+	<toolbar id="FindToolbar">
+		<checkbox insertafter="find-case-sensitive" id="find-regular-expression" oncommand="FBX.toggleRegularExpressionCheckbox(this.checked)" label="Regular Expression"/>
+	</toolbar>
+	
 </overlay>
