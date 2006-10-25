@@ -42,13 +42,23 @@
    - $Revision$
    -->
 
+<!DOCTYPE overlay [
+<!ENTITY % findBarXDTD SYSTEM "chrome://findbar/locale/findbar.dtd">
+%findBarXDTD;
+]>
+
 <overlay id="FindBarBrowserOverlay"
                         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
        
   <script type="application/x-javascript" src="findbar.js" />
 
+	<stringbundleset id="stringbundleset">
+		<stringbundle id="bundle_findBarX" src="chrome://findbar/locale/findbar.properties"/>
+	</stringbundleset>
+	
 	<toolbar id="FindToolbar">
-		<checkbox insertafter="find-case-sensitive" id="find-regular-expression" oncommand="FBX.toggleRegularExpressionCheckbox(this.checked)" label="Regular Expression"/>
+		<checkbox insertafter="find-case-sensitive" id="find-regular-expression" oncommand="FBX.toggleRegularExpressionCheckbox(this.checked)" label="&findbarx.regex.checkbox;"/>
+		<label insertafter="match-case-status" id="match-regular-expression" class="find-fast"/>
 	</toolbar>
 	
 </overlay>

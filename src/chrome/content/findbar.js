@@ -52,16 +52,38 @@ var FBX = {
 		this.mPrefs = Cc["@mozilla.org/preferences-service;1"]
 	                  .getService(Ci.nsIPrefService)
 	                  .getBranch("extensions.findbar.").QueryInterface(Ci.nsIPrefBranch2);
-		document.getElementById("find-regular-expression").checked = this.mPrefs.getBoolPref(regularExpression);
+	  this.updateUI(this.mPrefs.getBoolPref("regularExpression"));
 	  this.mPrefs.addObserver("", this, false);
-
+	  this.findBarUIUpdate(null, null, gFindBar.mUsingMinimalUI);
+		gFindBar.watch("mUsingMinimalUI", FBX.findBarUIUpdate);
+		
 		window.addEventListener("unload", this, false);
 	},
 	
 	destroy: function()
 	{
+		gFindBar.unwatch("mUsingMinimalUI");
 		window.removeEventListener("unload", this, false);
 		this.mPrefs.removeObserver("", this);
+	},
+	
+	findBarUIUpdate: function(prop, oldval, newval)
+	{
+		var label = document.getElementById("match-regular-expression");
+		label.hidden = !newval;
+		return newval;
+	},
+	
+	updateUI: function(regex)
+	{
+		document.getElementById("find-regular-expression").checked = regex;
+	  if (regex)
+	  {
+	  	var bundle = document.getElementById("bundle_findBarX");
+	  	document.getElementById("match-regular-expression").value = bundle.getString("findbarx.regex.label");
+	  }
+	  else
+	  	document.getElementById("match-regular-expression").value = "";
 	},
 	
 	toggleRegularExpressionCheckbox: function(value)
@@ -74,9 +96,7 @@ var FBX = {
 	observe: function (subject, topic, data)
 	{
 		if (data=="regularExpression")
-		{
-			document.getElementById("find-regular-expression").checked = this.mPrefs.getBoolPref(data);
-		}
+			this.updateUI(this.mPrefs.getBoolPref(data));
 	},
 	
 	handleEvent: function(event)
