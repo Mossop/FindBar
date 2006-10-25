@@ -198,27 +198,42 @@ Find: function(pattern, searchRange, startPoint, endPoint) {
 	{
 		pattern = pattern.replace(/([\*\+\?\.\|\{\}\[\]\(\)\$\^\\])/g, "\\$1");
 		pattern = pattern.replace(/ /g, "\\s+");
-#ifdef ${extension.debug}
-		dump("New pattern: "+pattern+"\n");
-#endif
 	}
-	var flags = "";
+	var flags = "m";
 	if (!this.mCaseSensitive)
 		flags+="i";
+	if (this.mFindBackwards)
+		flags+="g";
+#ifdef ${extension.debug}
+	dump("New pattern: /"+pattern+"/"+flags+"\n");
+#endif
 	
 	try
 	{
 		var re = new RegExp(pattern, flags);
 		re.ignoreCase = !this.mCaseSensitive;
-		var results = re.exec(te.textContent);
+		var results = re.exec(text);
 		if (results)
-#ifdef ${extension.debug}
 		{
-			dump("Found match at "+results.index+"\n");
-#endif
-			return te.getTextRange(results.index, results[0].length);
+			var index = results.index;
+			var length = results[0].length;
+			if (this.mFindBackwards)
+			{
+				results = re.exec(text);
+				while (results)
+				{
+					index = results.index;
+					length = results[0].length;
+					results = re.exec(text);
+				}
+			}
+			
 #ifdef ${extension.debug}
+			dump("Found match at "+index+"\n");
+#endif
+			return te.getTextRange(index, length);
 		}
+#ifdef ${extension.debug}
 		dump("No match found\n");
 #endif
 	}
