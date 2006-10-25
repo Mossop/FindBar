@@ -203,22 +203,27 @@ Find: function(pattern, searchRange, startPoint, endPoint) {
 #endif
 	}
 	var flags = "";
-	if (this.mCaseSensitive)
+	if (!this.mCaseSensitive)
 		flags+="i";
-	var re = new RegExp(pattern, flags);
-	re.ignoreCase = !this.mCaseSensitive;
-	var results = re.exec(te.textContent);
-	if (results)
-#ifdef ${extension.debug}
+	
+	try
 	{
-		dump("Found match at "+results.index+"\n");
-#endif
-		return te.getTextRange(results.index, results[0].length);
+		var re = new RegExp(pattern, flags);
+		re.ignoreCase = !this.mCaseSensitive;
+		var results = re.exec(te.textContent);
+		if (results)
 #ifdef ${extension.debug}
-	}
-	dump("No match found\n");
+		{
+			dump("Found match at "+results.index+"\n");
 #endif
-
+			return te.getTextRange(results.index, results[0].length);
+#ifdef ${extension.debug}
+		}
+		dump("No match found\n");
+#endif
+	}
+	catch (e) { } // invalid regex
+	
 	return null;
 },
 

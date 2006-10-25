@@ -43,11 +43,51 @@
  */
 
 var FBX = {
+	mPrefs: null,
+	
+	init: function()
+	{
+		window.removeEventListener("load", this, false);
 
+		this.mPrefs = Cc["@mozilla.org/preferences-service;1"]
+	                  .getService(Ci.nsIPrefService)
+	                  .getBranch("extensions.findbar.").QueryInterface(Ci.nsIPrefBranch2);
+		document.getElementById("find-regular-expression").checked = this.mPrefs.getBoolPref(regularExpression);
+	  this.mPrefs.addObserver("", this, false);
+
+		window.addEventListener("unload", this, false);
+	},
+	
+	destroy: function()
+	{
+		window.removeEventListener("unload", this, false);
+		this.mPrefs.removeObserver("", this);
+	},
+	
 	toggleRegularExpressionCheckbox: function(value)
 	{
 		var prefs = Components.classes["@mozilla.org/preferences-service;1"]
 	                        .getService(Ci.nsIPrefService);
 	  prefs.setBoolPref("extensions.findbar.regularExpression", value);
+	},
+	
+	observe: function (subject, topic, data)
+	{
+		if (data=="regularExpression")
+		{
+			document.getElementById("find-regular-expression").checked = this.mPrefs.getBoolPref(data);
+		}
+	},
+	
+	handleEvent: function(event)
+	{
+		switch (event.type)
+		{
+			case "load":
+				this.init();
+				break;
+		}
 	}
 };
+
+window.addEventListener("load", FBX, false);
