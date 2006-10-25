@@ -123,16 +123,6 @@ set wordBreaker(value) {
 
 Find: function(pattern, searchRange, startPoint, endPoint) {
 
-	if (!Components.classes["@blueprintit.co.uk/textextractor;1"])
-	{
-#ifdef ${extension.debug}
-		dump("Falling back to standard find\n");
-#endif
-		var rangefind = Components.classesByID[FB_RANGEFIND]
-		                          .createInstance(Ci.nsIFind);
-		return rangefind.Find(pattern, searchRange, startPoint, endPoint);
-	}
-	
 	var range = searchRange.cloneRange();
 	
 	var prefs = Cc["@mozilla.org/preferences-service;1"]
@@ -318,8 +308,19 @@ var initModule =
 		{
 			if (outer != null)
 				throw Components.results.NS_ERROR_NO_AGGREGATION;
-			var instance = new FBX_Find();
-			return instance.QueryInterface(iid);
+			if (Components.classes["@blueprintit.co.uk/textextractor;1"])
+			{
+				var instance = new FBX_Find();
+				return instance.QueryInterface(iid);
+			}
+			else
+			{
+#ifdef ${extension.debug}
+		dump("Falling back to standard find\n");
+#endif
+				return Components.classesByID[FB_RANGEFIND]
+		                     .createInstance(iid);
+		  }
 		}
 	}
 }; //Module
