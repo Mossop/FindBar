@@ -67,13 +67,18 @@ function outputNode(node, offset)
 }
 #endif
 
+const FB_RANGEFIND = "{471f4944-1dd2-11b2-87ac-90be0a51d609}";
+
 function FBX_Find()
 {
-	this.mPrefs = Cc["@mozilla.org/preferences-service;1"]
+#ifdef ${extension.debug}
+	dump("FBX_Find init\n");
+#endif
+/*	this.mPrefs = Cc["@mozilla.org/preferences-service;1"]
                   .getService(Ci.nsIPrefService)
                   .getBranch("extensions.findbar.").QueryInterface(Ci.nsIPrefBranch2);
 	this.mRegularExpression = this.mPrefs.getBoolPref("regularExpression");
-  this.mPrefs.addObserver("", this, false);
+  this.mPrefs.addObserver("", this, false);*/
 }
 
 FBX_Find.prototype = {
@@ -82,7 +87,7 @@ mRegularExpression: false,
 mCaseSensitive: false,
 mFindBackwards: false,
 mWordBreaker: null,
-mPrefs: null,
+//mPrefs: null,
 
 get regularExpression() {
 	return this.mRegularExpression;
@@ -117,8 +122,24 @@ set wordBreaker(value) {
 },
 
 Find: function(pattern, searchRange, startPoint, endPoint) {
+
+	if (!Components.classes["@blueprintit.co.uk/textextractor;1"])
+	{
+#ifdef ${extension.debug}
+		dump("Falling back to standard find\n");
+#endif
+		var rangefind = Components.classesByID[FB_RANGEFIND]
+		                          .createInstance(Ci.nsIFind);
+		return rangefind.Find(pattern, searchRange, startPoint, endPoint);
+	}
+	
 	var range = searchRange.cloneRange();
 	
+	var prefs = Cc["@mozilla.org/preferences-service;1"]
+                  .getService(Ci.nsIPrefService)
+                  .getBranch("extensions.findbar.");
+	this.mRegularExpression = prefs.getBoolPref("regularExpression");
+
 #ifdef ${extension.debug}
 	if (this.mFindBackwards)
 		dump("Searching for "+pattern+" (backwards)\n");
@@ -245,9 +266,7 @@ Find: function(pattern, searchRange, startPoint, endPoint) {
 observe: function (subject, topic, data)
 {
 	if (data=="regularExpression")
-	{
 		this.mRegularExpression = this.mPrefs.getBoolPref(data);
-	}
 },
 
 QueryInterface: function(iid)
