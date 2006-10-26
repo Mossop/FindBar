@@ -11,7 +11,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Nightly Tester Tools.
+ * The Original Code is /Find Bar/
  *
  * The Initial Developer of the Original Code is
  *      Dave Townsend <dave.townsend@blueprintit.co.uk>.
@@ -69,7 +69,7 @@ function outputNode(node, offset)
 
 const FB_RANGEFIND = "{471f4944-1dd2-11b2-87ac-90be0a51d609}";
 
-function FBX_Find()
+function FBRX_Find()
 {
 #ifdef ${extension.debug}
 	dump("FBX_Find init\n");
@@ -81,7 +81,7 @@ function FBX_Find()
   this.mPrefs.addObserver("", this, false);*/
 }
 
-FBX_Find.prototype = {
+FBRX_Find.prototype = {
 
 mRegularExpression: false,
 mCaseSensitive: false,
@@ -273,7 +273,7 @@ var initModule =
 {
 	ServiceCID: Components.ID("{4c77faaa-1ec3-46f8-bdda-25c5dd68b430}"),
 	ServiceContractID: "@mozilla.org/embedcomp/rangefind;1",
-	ServiceName: "Findbar Extreme Range Find",
+	ServiceName: "Find Bar RX Range Find",
 	
 	registerSelf: function (compMgr, fileSpec, location, type)
 	{
@@ -310,7 +310,7 @@ var initModule =
 				throw Components.results.NS_ERROR_NO_AGGREGATION;
 			if (Components.classes["@blueprintit.co.uk/textextractor;1"])
 			{
-				var instance = new FBX_Find();
+				var instance = new FBRX_Find();
 				return instance.QueryInterface(iid);
 			}
 			else

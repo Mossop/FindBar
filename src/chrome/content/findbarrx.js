@@ -11,7 +11,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Findbar Xtreme!
+ * The Original Code is /Find Bar/
  *
  * The Initial Developer of the Original Code is
  *      Dave Townsend <dave.townsend@blueprintit.co.uk>.
@@ -42,7 +42,7 @@
  *
  */
 
-var FBX = {
+var FBRX = {
 	mPrefs: null,
 	
 	init: function()
@@ -53,11 +53,11 @@ var FBX = {
 		{
 			this.mPrefs = Cc["@mozilla.org/preferences-service;1"]
 		                  .getService(Ci.nsIPrefService)
-		                  .getBranch("extensions.findbar.").QueryInterface(Ci.nsIPrefBranch2);
+		                  .getBranch("extensions.findbarrx.").QueryInterface(Ci.nsIPrefBranch2);
 		  this.updateUI(this.mPrefs.getBoolPref("regularExpression"));
 		  this.mPrefs.addObserver("", this, false);
 		  this.findBarUIUpdate(null, null, gFindBar.mUsingMinimalUI);
-			gFindBar.watch("mUsingMinimalUI", FBX.findBarUIUpdate);
+			gFindBar.watch("mUsingMinimalUI", this.findBarUIUpdate);
 				
 			window.addEventListener("unload", this, false);
 		}
@@ -89,8 +89,8 @@ var FBX = {
 		document.getElementById("find-regular-expression").checked = regex;
 	  if (regex)
 	  {
-	  	var bundle = document.getElementById("bundle_findBarX");
-	  	document.getElementById("match-regular-expression").value = bundle.getString("findbarx.regex.label");
+	  	var bundle = document.getElementById("bundle_findBarRX");
+	  	document.getElementById("match-regular-expression").value = bundle.getString("findbarrx.regex.label");
 	  }
 	  else
 	  	document.getElementById("match-regular-expression").value = "";
@@ -100,7 +100,7 @@ var FBX = {
 	{
 		var prefs = Components.classes["@mozilla.org/preferences-service;1"]
 	                        .getService(Ci.nsIPrefService);
-	  prefs.setBoolPref("extensions.findbar.regularExpression", value);
+	  prefs.setBoolPref("extensions.findbarrx.regularExpression", value);
 	},
 	
 	observe: function (subject, topic, data)
@@ -120,4 +120,4 @@ var FBX = {
 	}
 };
 
-window.addEventListener("load", FBX, false);
+window.addEventListener("load", FBRX, false);

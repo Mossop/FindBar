@@ -11,7 +11,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Nightly Tester Tools.
+ * The Original Code is /Find Bar/
  *
  * The Initial Developer of the Original Code is
  *      Dave Townsend <dave.townsend@blueprintit.co.uk>.
@@ -57,4 +57,4 @@ static nsModuleComponentInfo components[] =
 	}
 };
 
-NS_IMPL_NSGETMODULE("FindBarModule", components)
+NS_IMPL_NSGETMODULE("FindBarRXModule", components)

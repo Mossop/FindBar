@@ -11,7 +11,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Nightly Tester Tools.
+ * The Original Code is /Find Bar/
  *
  * The Initial Developer of the Original Code is
  *      Dave Townsend <dave.townsend@blueprintit.co.uk>.
@@ -51,7 +51,7 @@
 #include "nsTArray.h"
 
 #define TEXTEXTRACTOR_CONTRACTID "@blueprintit.co.uk/textextractor;1"
-#define TEXTEXTRACTOR_CLASSNAME "DOM Text Extractor"
+#define TEXTEXTRACTOR_CLASSNAME "Find Bar RX Text Extractor"
 #define TEXTEXTRACTOR_CID { 0xefa4ebba, 0x1002, 0x4a89, {0x88, 0x94, 0x54, 0x46, 0x9a, 0x9d, 0x99, 0x13} }
 
 class fbNodeInfo

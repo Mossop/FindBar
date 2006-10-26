@@ -13,7 +13,7 @@
    - for the specific language governing rights and limitations under the
    - License.
    -
-   - The Original Code is Findbar Xtreme!
+   - The Original Code is /Find Bar/
    -
    - The Initial Developer of the Original Code is
    -     Dave Townsend <dave.townsend@blueprintit.co.uk>.
@@ -43,17 +43,17 @@
    -->
 
 <!DOCTYPE overlay [
-<!ENTITY % findBarXDTD SYSTEM "chrome://findbar/locale/findbar.dtd">
-%findBarXDTD;
+<!ENTITY % findBarRXDTD SYSTEM "chrome://findbar/locale/findbarrx.dtd">
+%findBarRXDTD;
 ]>
 
-<overlay id="FindBarBrowserOverlay"
+<overlay id="FindBarRXBrowserOverlay"
                         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
        
-  <script type="application/x-javascript" src="findbar.js" />
+  <script type="application/x-javascript" src="findbarrx.js" />
 
 	<stringbundleset id="stringbundleset">
-		<stringbundle id="bundle_findBarX" src="chrome://findbar/locale/findbar.properties"/>
+		<stringbundle id="bundle_findBarRX" src="chrome://findbarrx/locale/findbarrx.properties"/>
 	</stringbundleset>
 	
 	<toolbar id="FindToolbar">

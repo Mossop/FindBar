@@ -5,12 +5,12 @@ VPATH                 = @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-MODULE                = findbar
+MODULE                = findbarrx
 
 DIRS                  = public src
 
-XPI_NAME              = findbar
-INSTALL_EXTENSION_ID  = findbar@blueprintit.co.uk
-XPI_PKGNAME           = findbar
+XPI_NAME              = findbarrx
+INSTALL_EXTENSION_ID  = findbarrx@blueprintit.co.uk
+XPI_PKGNAME           = findbarrx
 
 include $(topsrcdir)/config/rules.mk

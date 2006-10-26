@@ -1,1 +1,1 @@
-pref("extensions.findbar.regularExpression", false);
+pref("extensions.findbarrx.regularExpression", false);

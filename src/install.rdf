@@ -17,7 +17,7 @@
     </em:targetApplication>
     
     <!-- Front End MetaData -->
-    <em:name>Findbar Xtreme!</em:name>
+    <em:name>/Find Bar/</em:name>
     <em:description>A souped up findbar with regex capabilities</em:description>
     <em:creator>Mossop</em:creator>
 
