@@ -43,7 +43,7 @@
    -->
 
 <!DOCTYPE overlay [
-<!ENTITY % findBarRXDTD SYSTEM "chrome://findbar/locale/findbarrx.dtd">
+<!ENTITY % findBarRXDTD SYSTEM "chrome://findbarrx/locale/findbarrx.dtd">
 %findBarRXDTD;
 ]>
 
@@ -57,7 +57,7 @@
 	</stringbundleset>
 	
 	<toolbar id="FindToolbar">
-		<checkbox insertafter="find-case-sensitive" id="find-regular-expression" oncommand="FBX.toggleRegularExpressionCheckbox(this.checked)" label="&findbarx.regex.checkbox;"/>
+		<checkbox insertafter="find-case-sensitive" id="find-regular-expression" oncommand="FBX.toggleRegularExpressionCheckbox(this.checked)" label="&findbarrx.regex.checkbox;"/>
 		<label insertafter="match-case-status" id="match-regular-expression" class="find-fast"/>
 	</toolbar>
 	
