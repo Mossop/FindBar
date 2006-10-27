@@ -76,7 +76,7 @@ function FBRX_Find()
 #endif
 /*	this.mPrefs = Cc["@mozilla.org/preferences-service;1"]
                   .getService(Ci.nsIPrefService)
-                  .getBranch("extensions.findbar.").QueryInterface(Ci.nsIPrefBranch2);
+                  .getBranch("extensions.findbarrx.").QueryInterface(Ci.nsIPrefBranch2);
 	this.mRegularExpression = this.mPrefs.getBoolPref("regularExpression");
   this.mPrefs.addObserver("", this, false);*/
 }
@@ -127,7 +127,7 @@ Find: function(pattern, searchRange, startPoint, endPoint) {
 	
 	var prefs = Cc["@mozilla.org/preferences-service;1"]
                   .getService(Ci.nsIPrefService)
-                  .getBranch("extensions.findbar.");
+                  .getBranch("extensions.findbarrx.");
 	this.mRegularExpression = prefs.getBoolPref("regularExpression");
 
 #ifdef ${extension.debug}
