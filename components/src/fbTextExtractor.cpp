@@ -79,9 +79,9 @@ NS_IMETHODIMP fbTextExtractor::GetTextContent(nsAString & aTextContent)
 
 void fbTextExtractor::AddTextNode(nsIDOMNode *node, PRInt32 offset)
 {
-  nsAutoString text;
+  nsEmbedString text;
   node->GetNodeValue(text);
-  text.Cut(0, offset);
+  NS_StringCutData(text, 0, offset);
   fbNodeInfo nodeInfo;
   nodeInfo.mLength = text.Length();
 
@@ -99,9 +99,9 @@ void fbTextExtractor::AddTextNode(nsIDOMNode *node, PRInt32 offset)
 
 void fbTextExtractor::AddTextNode(nsIDOMNode *node, PRInt32 offset, PRInt32 length)
 {
-  nsAutoString text;
+  nsEmbedString text;
   node->GetNodeValue(text);
-  text.Cut(0, offset);
+  NS_StringCutData(text, 0, offset);
   text.SetLength(length);
   fbNodeInfo nodeInfo;
   nodeInfo.mLength = text.Length();
@@ -159,12 +159,11 @@ NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc, nsIDOMRange *aRange)
   if (!aDoc)
     return NS_ERROR_INVALID_ARG;
     
-	nsresult rv;
+  nsresult rv;
 	
-	mDocument = nsnull;
-	mTextContent.Truncate();
-	
-	PRBool inrange = PR_TRUE;
+  mDocument = nsnull;
+  mTextContent = EmptyString();
+  
   nsCOMPtr<nsIDOMNode> currentNode;
   nsCOMPtr<nsIDOMNode> end;
   PRInt32 startOffset = 0;
@@ -174,16 +173,16 @@ NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc, nsIDOMRange *aRange)
     nsCOMPtr<nsIDOMHTMLDocument> htmlDoc = do_QueryInterface(aDoc, &rv);
     if (NS_SUCCEEDED(rv))
     {
-    	nsCOMPtr<nsIDOMHTMLElement> eleRoot;
-    	rv = htmlDoc->GetBody(getter_AddRefs(eleRoot));
+      nsCOMPtr<nsIDOMHTMLElement> eleRoot;
+      rv = htmlDoc->GetBody(getter_AddRefs(eleRoot));
       if (NS_FAILED(rv)) return rv;
       end = do_QueryInterface(eleRoot, &rv);
       if (NS_FAILED(rv)) return rv;
     }
     else
     {
-    	nsCOMPtr<nsIDOMElement> eleRoot;
-    	rv = aDoc->GetDocumentElement(getter_AddRefs(eleRoot));
+      nsCOMPtr<nsIDOMElement> eleRoot;
+      rv = aDoc->GetDocumentElement(getter_AddRefs(eleRoot));
       if (NS_FAILED(rv)) return rv;
       end = do_QueryInterface(eleRoot, &rv);
       if (NS_FAILED(rv)) return rv;
@@ -236,15 +235,15 @@ NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc, nsIDOMRange *aRange)
     }
   }
 
-	nsCOMPtr<nsIDOMViewCSS> view;
-	nsCOMPtr<nsIDOMDocumentView> docView = do_QueryInterface(aDoc, &rv);
-	if (NS_SUCCEEDED(rv))
-	{
-	  nsCOMPtr<nsIDOMAbstractView> absView;
-	  rv = docView->GetDefaultView(getter_AddRefs(absView));
-	  if (NS_SUCCEEDED(rv))
-	  	view = do_QueryInterface(view, &rv);
-	}
+  nsCOMPtr<nsIDOMViewCSS> view;
+  nsCOMPtr<nsIDOMDocumentView> docView = do_QueryInterface(aDoc, &rv);
+  if (NS_SUCCEEDED(rv))
+  {
+    nsCOMPtr<nsIDOMAbstractView> absView;
+    rv = docView->GetDefaultView(getter_AddRefs(absView));
+    if (NS_SUCCEEDED(rv))
+      view = do_QueryInterface(view, &rv);
+  }
   
   while (currentNode)
   {
@@ -267,23 +266,23 @@ NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc, nsIDOMRange *aRange)
     startOffset = 0;
     if (type == nsIDOMNode::ELEMENT_NODE)
     {
-    	if (view)
-    	{
-    		nsCOMPtr<nsIDOMElement> element = do_QueryInterface(currentNode, &rv);
-    		nsCOMPtr<nsIDOMCSSStyleDeclaration> style;
-    		rv = view->GetComputedStyle(element, EmptyString(), getter_AddRefs(style));
-    		if (NS_SUCCEEDED(rv))
-    		{
-					nsAutoString display;
-					style->GetPropertyValue(NS_LITERAL_STRING("display"), display);
-					if (display.EqualsLiteral("none"))
-					{
-						WalkPastTree(currentNode, end, getter_AddRefs(nextNode));
-						currentNode = nextNode;
-						continue;
-					}
-    		}
-    	}
+      if (view)
+      {
+        nsCOMPtr<nsIDOMElement> element = do_QueryInterface(currentNode, &rv);
+        nsCOMPtr<nsIDOMCSSStyleDeclaration> style;
+        rv = view->GetComputedStyle(element, EmptyString(), getter_AddRefs(style));
+        if (NS_SUCCEEDED(rv))
+        {
+          nsEmbedString display;
+          style->GetPropertyValue(NS_LITERAL_STRING("display"), display);
+          if (display.Equals(NS_LITERAL_STRING("none")))
+          {
+            WalkPastTree(currentNode, end, getter_AddRefs(nextNode));
+            currentNode = nextNode;
+            continue;
+          }
+        }
+      }
     }
     
     WalkIntoTree(currentNode, end, getter_AddRefs(nextNode));
@@ -291,7 +290,7 @@ NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc, nsIDOMRange *aRange)
   }
   mDocument = aDoc;
   
-	return NS_OK;
+  return NS_OK;
 }
 
 PRUint32 fbTextExtractor::GetOffsetPosition(PRInt32 offset, PRInt32 start, PRInt32 end)
@@ -324,12 +323,12 @@ NS_IMETHODIMP fbTextExtractor::GetTextRange(PRInt32 offset, PRInt32 length, nsID
   if (!mDocument)
     return NS_ERROR_NOT_INITIALIZED;
   
-	nsresult rv;
+  nsresult rv;
 	
-	nsCOMPtr<nsIDOMDocumentRange> docrange = do_QueryInterface(mDocument, &rv);
-	if (NS_FAILED(rv)) return rv;
+  nsCOMPtr<nsIDOMDocumentRange> docrange = do_QueryInterface(mDocument, &rv);
+  if (NS_FAILED(rv)) return rv;
 
-	nsCOMPtr<nsIDOMRange> range;
+  nsCOMPtr<nsIDOMRange> range;
   rv = docrange->CreateRange(getter_AddRefs(range));
   if (NS_FAILED(rv)) return rv;
 

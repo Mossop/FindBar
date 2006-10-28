@@ -46,7 +46,7 @@
 #define _fbTextExtractor_h_
 
 #include "fbITextExtractor.h"
-#include "nsStringAPI.h"
+#include "nsEmbedString.h"
 #include "nsCOMPtr.h"
 #include "nsTArray.h"
 
@@ -77,10 +77,10 @@ private:
   nsCOMPtr<nsIDOMDocument> mDocument;
   nsTArray<fbNodeInfo> mNodeContent;
   
-  void fbTextExtractor::AddTextNode(nsIDOMNode *node, PRInt32 offset);
-  void fbTextExtractor::AddTextNode(nsIDOMNode *node, PRInt32 offset, PRInt32 length);
-  void fbTextExtractor::WalkPastTree(nsIDOMNode *current, nsIDOMNode *limit, nsIDOMNode **retval);
-  void fbTextExtractor::WalkIntoTree(nsIDOMNode *current, nsIDOMNode *limit, nsIDOMNode **retval);
+  void AddTextNode(nsIDOMNode *node, PRInt32 offset);
+  void AddTextNode(nsIDOMNode *node, PRInt32 offset, PRInt32 length);
+  void WalkPastTree(nsIDOMNode *current, nsIDOMNode *limit, nsIDOMNode **retval);
+  void WalkIntoTree(nsIDOMNode *current, nsIDOMNode *limit, nsIDOMNode **retval);
   PRUint32 GetOffsetPosition(PRInt32 offset, PRInt32 start, PRInt32 end);
   PRUint32 GetOffsetPosition(PRInt32 offset, PRInt32 start);
 
