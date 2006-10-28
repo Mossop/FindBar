@@ -48,6 +48,10 @@
 #include "nsIDOMElement.h"
 #include "nsIDOMNodeList.h"
 #include "nsIDOMDocumentRange.h"
+#include "nsIDOMDocumentView.h"
+#include "nsIDOMAbstractView.h"
+#include "nsIDOMViewCSS.h"
+#include "nsIDOMCSSStyleDeclaration.h"
 
 NS_IMPL_ISUPPORTS1(fbTextExtractor,
                    fbITextExtractor)
@@ -231,21 +235,57 @@ NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc, nsIDOMRange *aRange)
       startOffset = 0;
     }
   }
+
+	nsCOMPtr<nsIDOMViewCSS> view;
+	nsCOMPtr<nsIDOMDocumentView> docView = do_QueryInterface(aDoc, &rv);
+	if (NS_SUCCEEDED(rv))
+	{
+	  nsCOMPtr<nsIDOMAbstractView> absView;
+	  rv = docView->GetDefaultView(getter_AddRefs(absView));
+	  if (NS_SUCCEEDED(rv))
+	  	view = do_QueryInterface(view, &rv);
+	}
   
   while (currentNode)
   {
     PRUint16 type;
     currentNode->GetNodeType(&type);
     
-    if (type == nsIDOMNode::TEXT_NODE)
+    nsCOMPtr<nsIDOMNode> nextNode;
+    if ((type == nsIDOMNode::TEXT_NODE) || (type == nsIDOMNode::CDATA_SECTION_NODE))
     {
       if (currentNode != end)
         AddTextNode(currentNode, startOffset);
       else
         AddTextNode(currentNode, startOffset, endOffset);
+      WalkPastTree(currentNode, end, getter_AddRefs(nextNode));
+      currentNode = nextNode;
+      startOffset = 0;
+      continue;
     }
+    
     startOffset = 0;
-    nsCOMPtr<nsIDOMNode> nextNode;
+    if (type == nsIDOMNode::ELEMENT_NODE)
+    {
+    	if (view)
+    	{
+    		nsCOMPtr<nsIDOMElement> element = do_QueryInterface(currentNode, &rv);
+    		nsCOMPtr<nsIDOMCSSStyleDeclaration> style;
+    		rv = view->GetComputedStyle(element, EmptyString(), getter_AddRefs(style));
+    		if (NS_SUCCEEDED(rv))
+    		{
+					nsAutoString display;
+					style->GetPropertyValue(NS_LITERAL_STRING("display"), display);
+					if (display.EqualsLiteral("none"))
+					{
+						WalkPastTree(currentNode, end, getter_AddRefs(nextNode));
+						currentNode = nextNode;
+						continue;
+					}
+    		}
+    	}
+    }
+    
     WalkIntoTree(currentNode, end, getter_AddRefs(nextNode));
     currentNode = nextNode;
   }
