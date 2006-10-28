@@ -220,7 +220,7 @@ NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc, nsIDOMRange *aRange)
       currentNode->GetChildNodes(getter_AddRefs(children));
       PRUint32 length;
       children->GetLength(&length);
-      if (startOffset<length)
+      if (startOffset<(PRInt32)length)
         children->Item(startOffset, getter_AddRefs(currentNode));
       else if (length > 0)
       {
