@@ -57,7 +57,7 @@
 	</stringbundleset>
 	
 	<toolbar id="FindToolbar">
-		<checkbox insertafter="find-case-sensitive" id="find-regular-expression" oncommand="FBX.toggleRegularExpressionCheckbox(this.checked)" label="&findbarrx.regex.checkbox;"/>
+		<checkbox insertafter="find-case-sensitive" id="find-regular-expression" oncommand="FBRX.toggleRegularExpressionCheckbox(this.checked)" label="&findbarrx.regex.checkbox;"/>
 		<label insertafter="match-case-status" id="match-regular-expression" class="find-fast"/>
 	</toolbar>
 	
