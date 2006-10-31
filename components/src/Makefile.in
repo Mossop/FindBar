@@ -65,6 +65,10 @@ CPPSRCS = fbTextExtractor.cpp \
 
 include $(topsrcdir)/config/rules.mk
 
+ifeq ($(OS_ARCH),Linux)
+EXTRA_DSO_LDOPTS += -nodefaultlibs -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lgcc_s -lc
+endif
+
 EXTRA_DSO_LDOPTS += $(XPCOM_GLUE_LDOPTS) \
                     $(NSPR_LIBS) \
                     $(NULL)
