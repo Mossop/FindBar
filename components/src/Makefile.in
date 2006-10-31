@@ -48,7 +48,6 @@ VPATH                 = @srcdir@
 include $(DEPTH)/config/autoconf.mk
 
 IS_COMPONENT          = 1
-USE_STATIC_LIBS       = 1
 MODULE                = findbarrx
 LIBRARY_NAME          = FindBarRX
 
@@ -65,6 +64,10 @@ CPPSRCS = fbTextExtractor.cpp \
 
 include $(topsrcdir)/config/rules.mk
 
+# Appears to only affect Windows. Link statically to msvcrt.
+USE_STATIC_LIBS       = 1
+
+# Link statically to libstdc++ on Linux
 ifeq ($(OS_ARCH),Linux)
 EXTRA_DSO_LDOPTS += -nodefaultlibs -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lgcc_s -lc
 endif
