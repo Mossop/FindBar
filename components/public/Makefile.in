@@ -48,10 +48,9 @@ VPATH                 = @srcdir@
 include $(DEPTH)/config/autoconf.mk
 	
 MODULE                = findbarrx
-XPIDL_MODULE          = fbITextExtractor
-	
+
 XPI_NAME              = findbarrx
-	
+
 EXPORTS = $(NULL)
 	
 XPIDLSRCS	= fbITextExtractor.idl \
