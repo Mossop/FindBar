@@ -18,7 +18,7 @@
     
     <!-- Front End MetaData -->
     <em:name>/Find Bar/</em:name>
-    <em:description>A souped up findbar with regex capabilities</em:description>
+    <em:description>A souped up findbar with regular expression capabilities</em:description>
     <em:creator>Mossop</em:creator>
 
     <em:homepageURL>http://users.blueprintit.co.uk/~dave/web/firefox/${extension.name}</em:homepageURL>
