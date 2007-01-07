@@ -316,7 +316,7 @@ var initModule =
 			else
 			{
 #ifdef ${extension.debug}
-		dump("Falling back to standard find\n");
+				dump("Falling back to standard find\n");
 #endif
 				return Components.classesByID[FB_RANGEFIND]
 		                     .createInstance(iid);
