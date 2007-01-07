@@ -79,6 +79,10 @@ function FBRX_Find()
                   .getBranch("extensions.findbarrx.").QueryInterface(Ci.nsIPrefBranch2);
 	this.mRegularExpression = this.mPrefs.getBoolPref("regularExpression");
   this.mPrefs.addObserver("", this, false);*/
+  if (Cc["@blueprintit.co.uk/textextractor;1"])
+  	this.mTEClass = Cc["@blueprintit.co.uk/textextractor;1"];
+  else
+  	this.mTEClass = Cc["@blueprintit.co.uk/fallbacktextextractor;1"];
 }
 
 FBRX_Find.prototype = {
@@ -87,6 +91,7 @@ mRegularExpression: false,
 mCaseSensitive: false,
 mFindBackwards: false,
 mWordBreaker: null,
+mTEClass: null,
 //mPrefs: null,
 
 get regularExpression() {
@@ -196,8 +201,7 @@ Find: function(pattern, searchRange, startPoint, endPoint) {
 		dump("endPoint is null\n");
 #endif
 	
-	var te = Components.classes["@blueprintit.co.uk/textextractor;1"]
-	                   .createInstance(Ci.fbITextExtractor);
+	var te = this.mTEClass.createInstance(Ci.fbITextExtractor);
 	te.init(range.startContainer.ownerDocument, range);
 	var text = te.textContent;
 #ifdef ${extension.debug}
@@ -292,7 +296,7 @@ var initModule =
 	{
 		if (!cid.equals(this.ServiceCID))
 			throw Components.results.NS_ERROR_NO_INTERFACE
-		if (!iid.equals(Components.interfaces.nsIFactory))
+		if (!iid.equals(Ci.nsIFactory))
 			throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
 		return this.instanceFactory;
 	},
@@ -308,19 +312,14 @@ var initModule =
 		{
 			if (outer != null)
 				throw Components.results.NS_ERROR_NO_AGGREGATION;
-			if (Components.classes["@blueprintit.co.uk/textextractor;1"])
-			{
-				var instance = new FBRX_Find();
-				return instance.QueryInterface(iid);
-			}
-			else
-			{
 #ifdef ${extension.debug}
-				dump("Falling back to standard find\n");
+			if (!Cc["@blueprintit.co.uk/textextractor;1"])
+			{
+				dump("Falling back to javascript text extractor\n");
+			}
 #endif
-				return Components.classesByID[FB_RANGEFIND]
-		                     .createInstance(iid);
-		  }
+			var instance = new FBRX_Find();
+			return instance.QueryInterface(iid);
 		}
 	}
 }; //Module
