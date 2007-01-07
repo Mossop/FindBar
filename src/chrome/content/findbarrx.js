@@ -49,25 +49,15 @@ var FBRX = {
 	{
 		window.removeEventListener("load", this, false);
 
-		if (Components.classes["@blueprintit.co.uk/textextractor;1"])
-		{
-			this.mPrefs = Cc["@mozilla.org/preferences-service;1"]
-		                  .getService(Ci.nsIPrefService)
-		                  .getBranch("extensions.findbarrx.").QueryInterface(Ci.nsIPrefBranch2);
-		  this.updateUI(this.mPrefs.getBoolPref("regularExpression"));
-		  this.mPrefs.addObserver("", this, false);
-		  this.findBarUIUpdate(null, null, gFindBar.mUsingMinimalUI);
-			gFindBar.watch("mUsingMinimalUI", this.findBarUIUpdate);
-				
-			window.addEventListener("unload", this, false);
-		}
-		else
-		{
-			var node = document.getElementById("find-regular-expression");
-			node.parentNode.removeChild(node);
-			node = document.getElementById("match-regular-expression");
-			node.parentNode.removeChild(node);
-		}
+		this.mPrefs = Cc["@mozilla.org/preferences-service;1"]
+	                  .getService(Ci.nsIPrefService)
+	                  .getBranch("extensions.findbarrx.").QueryInterface(Ci.nsIPrefBranch2);
+	  this.updateUI(this.mPrefs.getBoolPref("regularExpression"));
+	  this.mPrefs.addObserver("", this, false);
+	  this.findBarUIUpdate(null, null, gFindBar.mUsingMinimalUI);
+		gFindBar.watch("mUsingMinimalUI", this.findBarUIUpdate);
+			
+		window.addEventListener("unload", this, false);
 	},
 	
 	destroy: function()

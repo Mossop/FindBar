@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+
+ <!-- ***** BEGIN LICENSE BLOCK *****
+   - Version: MPL 1.1/GPL 2.0/LGPL 2.1
+   -
+   - The contents of this file are subject to the Mozilla Public License Version
+   - 1.1 (the "License"); you may not use this file except in compliance with
+   - the License. You may obtain a copy of the License at
+   - http://www.mozilla.org/MPL/
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   -
+   - The Original Code is /Find Bar/
+   -
+   - The Initial Developer of the Original Code is
+   -     Dave Townsend <dave.townsend@blueprintit.co.uk>.
+   - Portions created by the Initial Developer are Copyright (C) 2006
+   - the Initial Developer. All Rights Reserved.
+   -
+   - Contributor(s):
+   -
+   - Alternatively, the contents of this file may be used under the terms of
+   - either the GNU General Public License Version 2 or later (the "GPL"), or
+   - the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+   - in which case the provisions of the GPL or the LGPL are applicable instead
+   - of those above. If you wish to allow use of your version of this file only
+   - under the terms of either the GPL or the LGPL, and not to allow others to
+   - use your version of this file under the terms of the MPL, indicate your
+   - decision by deleting the provisions above and replace them with the notice
+   - and other provisions required by the LGPL or the GPL. If you do not delete
+   - the provisions above, a recipient may use your version of this file under
+   - the terms of any one of the MPL, the GPL or the LGPL.
+   -
+   - ***** END LICENSE BLOCK *****
+   -
+   - $HeadURL$
+   - $LastChangedBy$
+   - $Date$
+   - $Revision$
+   -->
+
+<!DOCTYPE bindings [
+<!ENTITY % findBarDTD SYSTEM "chrome://global/locale/findbar.dtd" >
+%findBarDTD;
+<!ENTITY % findBarRXDTD SYSTEM "chrome://findbarrx/locale/findbarrx.dtd">
+%findBarRXDTD;
+]>
+
+<bindings id="FindBarRXBindings"
+          xmlns="http://www.mozilla.org/xbl"
+          xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          xmlns:xbl="http://www.mozilla.org/xbl">
+
+  <binding id="findbarrx" name="findbarrx"
+           extends="chrome://global/content/bindings/findbar.xml#findbar">
+    <content align="center" hidden="true">
+      <xul:toolbarbutton anonid="find-closebutton"
+                         class="findbar-closebutton"
+                         tooltiptext="&findCloseButton.tooltip;"
+                         oncommand="close();"/>
+      <xul:label anonid="find-label" class="findbar-find-fast"/>
+      <xul:hbox anonid="find-field-container"
+                class="find-field-container findbar-find-fast">
+        <xul:textbox class="findbar-textbox" anonid="findbar-textbox"/>
+      </xul:hbox>
+      <xul:toolbarbutton anonid="find-next"
+                         class="findbar-find-next"
+                         label="&next.label;"
+                         accesskey="&next.accesskey;"
+                         tooltiptext="&next.tooltip;"
+                         oncommand="onFindAgainCommand(false);"
+                         disabled="true"
+                         xbl:inherits="accesskey=findnextaccesskey"/>
+      <xul:toolbarbutton anonid="find-previous"
+                         class="findbar-find-previous"
+                         label="&previous.label;"
+                         accesskey="&previous.accesskey;"
+                         tooltiptext="&previous.tooltip;"
+                         oncommand="onFindAgainCommand(true);"
+                         disabled="true"
+                         xbl:inherits="accesskey=findpreviousaccesskey"/>
+      <xul:toolbarbutton anonid="highlight"
+                         class="findbar-highlight"
+                         label="&highlight.label;"
+                         accesskey="&highlight.accesskey;"
+                         tooltiptext="&highlight.tooltiptext;"
+                         oncommand="toggleHighlight(!this.checked);"
+                         type="checkbox"
+                         disabled="true"
+                         xbl:inherits="accesskey=highlightaccesskey"/>
+      <xul:checkbox anonid="find-case-sensitive"
+                    oncommand="_setCaseSensitivity(this.checked);"
+                    label="&caseSensitiveCheckbox.label;"
+                    accesskey="&caseSensitiveCheckbox.accesskey;"
+                    xbl:inherits="accesskey=matchcaseaccesskey"/>
+      <xul:checkbox anonid="find-regular-expression" 
+                    oncommand="_setRegularExpression(this.checked);"
+                    label="&findbarrx.regex.checkbox;"/>
+      <xul:label anonid="match-case-status" class="findbar-find-fast"/>
+      <xul:label anonid="match-regular-expression" class="findbar-find-fast"/>
+      <xul:image anonid="find-status-icon" class="find-status-icon"/>
+      <xul:label anonid="find-status" class="findbar-find-status"/>
+    </content>
+    
+    <implementation>
+      <method name="_setRegularExpression">
+        <parameter name="aRegularExpression"/>
+        <body><![CDATA[
+          var prefsvc =
+            Components.classes["@mozilla.org/preferences-service;1"]
+                      .getService(Components.interfaces.nsIPrefBranch2);
+
+          // Just set the pref; our observer will change the find bar behavior
+          prefsvc.setBoolPref("extensions.findbarrx.regularExpression", aRegularExpression);
+        ]]></body>
+      </method>
+    </implementation>
+	</binding>
+</bindings>
