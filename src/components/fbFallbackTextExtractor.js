@@ -73,33 +73,20 @@ get textContent() {
   return this.mTextContent;
 },
   
-addTextNode: function(node, offset)
-{
-	var text = node.nodeValue.substring(offset);
-	var nodeInfo = new fbNodeInfo();
-  nodeInfo.mLength = text.length;
-
-  if (nodeInfo.mLength > 0)
-  {
-    nodeInfo.mDocumentOffset = mTextContent.length;
-    nodeInfo.mNodeOffset = offset;
-    nodeInfo.mNode = node;
-
-    this.mTextContent+=text;
-    
-    this.mNodeContent.push(nodeInfo);
-  }
-},
-
 addTextNode: function(node, offset, length)
 {
-	var text = node.nodeValue.substring(offset, length);
+	var text;
+	if (length)
+		text = node.nodeValue.substring(offset, length);
+	else
+		text = node.nodeValue.substring(offset);
+
   nodeInfo = new fbNodeInfo();
   nodeInfo.mLength = text.length;
 
   if (nodeInfo.mLength > 0)
   {
-    nodeInfo.mDocumentOffset = mTextContent.length;
+    nodeInfo.mDocumentOffset = this.mTextContent.length;
     nodeInfo.mNodeOffset = offset;
     nodeInfo.mNode = node;
 
@@ -215,9 +202,9 @@ init: function(document, range) {
     if ((type == Ci.nsIDOMNode.TEXT_NODE) || (type == Ci.nsIDOMNode.CDATA_SECTION_NODE))
     {
       if (currentNode != end)
-        addTextNode(currentNode, startOffset);
+        this.addTextNode(currentNode, startOffset);
       else
-        addTextNode(currentNode, startOffset, endOffset);
+        this.addTextNode(currentNode, startOffset, endOffset);
       nextNode = this.walkPastTree(currentNode, end);
       currentNode = nextNode;
       startOffset = 0;
@@ -246,19 +233,19 @@ init: function(document, range) {
   this.mDocument = document;
 },
 	
-getOffsetPosition: function(offset, start, end)
+seekOffsetPosition: function(offset, start, end)
 {
   if (end <= (start+1))
     return start;
   
   var diff = this.mNodeContent[end].mDocumentOffset-this.mNodeContent[start].mDocumentOffset;
   var offs = offset-this.mNodeContent[start].mDocumentOffset;
-  var mid = start+(offs/(diff*1.0/(end-start)));
+  var mid = Math.floor(start+(offs/(diff*1.0/(end-start))));
   
   if (this.mNodeContent[mid].mDocumentOffset > offset)
-    return this.getOffsetPosition(offset, start, mid);
+    return this.seekOffsetPosition(offset, start, mid);
   if ((this.mNodeContent[mid].mDocumentOffset+this.mNodeContent[mid].mLength) <= offset)
-    return this.getOffsetPosition(offset, mid+1, end);
+    return this.seekOffsetPosition(offset, mid+1, end);
   return mid;
 },
 
@@ -267,7 +254,7 @@ getOffsetPosition: function(offset, start)
   var end = this.mNodeContent.length-1;
   if (this.mNodeContent[end].mDocumentOffset <= offset)
     return end;
-  return this.getOffsetPosition(offset, start, end);
+  return this.seekOffsetPosition(offset, start, end);
 },
 
 getTextRange: function(offset, length) {
