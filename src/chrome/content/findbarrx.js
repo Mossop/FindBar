@@ -43,71 +43,90 @@
  */
 
 var FBRX = {
-	mPrefs: null,
-	
-	init: function()
-	{
-		window.removeEventListener("load", this, false);
+  mPrefs: null,
 
-		this.mPrefs = Cc["@mozilla.org/preferences-service;1"]
-	                  .getService(Ci.nsIPrefService)
-	                  .getBranch("extensions.findbarrx.").QueryInterface(Ci.nsIPrefBranch2);
-	  this.updateUI(this.mPrefs.getBoolPref("regularExpression"));
-	  this.mPrefs.addObserver("", this, false);
-	  this.findBarUIUpdate(null, null, gFindBar.mUsingMinimalUI);
-		gFindBar.watch("mUsingMinimalUI", this.findBarUIUpdate);
-			
-		window.addEventListener("unload", this, false);
-	},
-	
-	destroy: function()
-	{
-		gFindBar.unwatch("mUsingMinimalUI");
-		window.removeEventListener("unload", this, false);
-		this.mPrefs.removeObserver("", this);
-	},
-	
-	findBarUIUpdate: function(prop, oldval, newval)
-	{
-		var label = document.getElementById("match-regular-expression");
-		label.hidden = !newval;
-		return newval;
-	},
-	
-	updateUI: function(regex)
-	{
-		document.getElementById("find-regular-expression").checked = regex;
-	  if (regex)
-	  {
-	  	var bundle = document.getElementById("bundle_findBarRX");
-	  	document.getElementById("match-regular-expression").value = bundle.getString("findbarrx.regex.label");
-	  }
-	  else
-	  	document.getElementById("match-regular-expression").value = "";
-	},
-	
-	toggleRegularExpressionCheckbox: function(value)
-	{
-		var prefs = Components.classes["@mozilla.org/preferences-service;1"]
-	                        .getService(Ci.nsIPrefService);
-	  prefs.setBoolPref("extensions.findbarrx.regularExpression", value);
-	},
-	
-	observe: function (subject, topic, data)
-	{
-		if (data=="regularExpression")
-			this.updateUI(this.mPrefs.getBoolPref(data));
-	},
-	
-	handleEvent: function(event)
-	{
-		switch (event.type)
-		{
-			case "load":
-				this.init();
-				break;
-		}
-	}
+  init: function()
+  {
+    window.removeEventListener("load", this, false);
+
+    this.mPrefs = Components.classes["@mozilla.org/preferences-service;1"]
+                            .getService(Components.interfaces.nsIPrefService)
+                            .getBranch("extensions.findbarrx.")
+                            .QueryInterface(Components.interfaces.nsIPrefBranch2);
+    this.updateUI(this.mPrefs.getBoolPref("regularExpression"));
+    this.mPrefs.addObserver("", this, false);
+    this.findBarUIUpdate(null, null, gFindBar.mUsingMinimalUI);
+    gFindBar.watch("mUsingMinimalUI", this.findBarUIUpdate);
+
+    window.addEventListener("unload", this, false);
+  },
+
+  destroy: function()
+  {
+    gFindBar.unwatch("mUsingMinimalUI");
+    window.removeEventListener("unload", this, false);
+    this.mPrefs.removeObserver("", this);
+  },
+
+  startup: function()
+  {
+    this.init();
+  },
+
+  shutdown: function()
+  {
+    this.destroy();
+  },
+
+  findBarUIUpdate: function(prop, oldval, newval)
+  {
+    var label = document.getElementById("match-regular-expression");
+    if (label)
+      label.hidden = !newval;
+    return newval;
+  },
+
+  updateUI: function(regex)
+  {
+    var checkbox = document.getElementById("find-regular-expression");
+    if (checkbox)
+      checkbox.checked = regex;
+    var label = document.getElementById("match-regular-expression");
+
+    if (label)
+    {
+      if (regex)
+      {
+        var bundle = document.getElementById("bundle_findBarRX");
+        label.value = bundle.getString("findbarrx.regex.label");
+      }
+      else
+        label.value = "";
+    }
+  },
+
+  toggleRegularExpressionCheckbox: function(value)
+  {
+    var prefs = Components.classes["@mozilla.org/preferences-service;1"]
+                          .getService(Components.interfaces.nsIPrefService);
+    prefs.setBoolPref("extensions.findbarrx.regularExpression", value);
+  },
+
+  observe: function (subject, topic, data)
+  {
+    if (data=="regularExpression")
+      this.updateUI(this.mPrefs.getBoolPref(data));
+  },
+
+  handleEvent: function(event)
+  {
+    switch (event.type)
+    {
+      case "load":
+        this.init();
+        break;
+    }
+  }
 };
 
 window.addEventListener("load", FBRX, false);

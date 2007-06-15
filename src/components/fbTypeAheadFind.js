@@ -50,7 +50,7 @@ function outputNode(node, offset)
 {
 	if (node.nodeType == Ci.nsIDOMNode.TEXT_NODE)
 	{
-		dump("text node "+node.nodeValue+" "+offset+"\n");
+		dump("text node offset "+offset+"\n");
 	}
 	else if (node.nodeType == Ci.nsIDOMNode.ELEMENT_NODE)
 	{

@@ -48,8 +48,7 @@
 %findBarRXDTD;
 ]>
 
-<overlay id="FindBarRXBrowserOverlay"
-                        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<overlay id="FindBarRXBrowserOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
        
   <script type="application/x-javascript" src="findbarrx.js" />
 
