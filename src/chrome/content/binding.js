@@ -43,63 +43,64 @@
  */
 
 var FBRX = {
-	mPrefs: null,
-	
-	init: function()
-	{
-		window.removeEventListener("load", this, false);
+  mPrefs: null,
+  
+  init: function()
+  {
+    window.removeEventListener("load", this, false);
 
-		this.mPrefs = Cc["@mozilla.org/preferences-service;1"]
-	                  .getService(Ci.nsIPrefService)
-	                  .getBranch("extensions.findbarrx.").QueryInterface(Ci.nsIPrefBranch2);
-	  this.updateUI(this.mPrefs.getBoolPref("regularExpression"));
-	  this.mPrefs.addObserver("", this, false);
-			
-		window.addEventListener("unload", this, false);
-	},
-	
-	destroy: function()
-	{
-		window.removeEventListener("unload", this, false);
-		this.mPrefs.removeObserver("", this);
-	},
-	
-	updateUI: function(regex)
-	{
-		var bars = document.getElementsByTagName("findbar");
-		for (var i=0; i<bars.length; i++)
-		{
-			var checkbox = document.getAnonymousElementByAttribute(bars[i], "anonid", "find-regular-expression");
-			var label = document.getAnonymousElementByAttribute(bars[i], "anonid", "match-regular-expression");
-		  checkbox.checked = regex;
-		  if (regex)
-		  {
-		  	var bundle = document.getElementById("bundle_findBarRX");
-		  	label.value = bundle.getString("findbarrx.regex.label");
-		  }
-		  else
-		  	label.value = "";
-		}
-	},
-	
-	observe: function (subject, topic, data)
-	{
-		if (data=="regularExpression")
-			this.updateUI(this.mPrefs.getBoolPref(data));
-	},
-	
-	handleEvent: function(event)
-	{
-		switch (event.type)
-		{
-			case "load":
-				this.init();
-				break;
-			case "unload":
-				this.destroy();
-				break;
-		}
-	}
+    this.mPrefs = Cc["@mozilla.org/preferences-service;1"]
+                    .getService(Ci.nsIPrefService)
+                    .getBranch("extensions.findbarrx.")
+                    .QueryInterface(Ci.nsIPrefBranch2);
+    this.updateUI(this.mPrefs.getBoolPref("regularExpression"));
+    this.mPrefs.addObserver("", this, false);
+      
+    window.addEventListener("unload", this, false);
+  },
+  
+  destroy: function()
+  {
+    window.removeEventListener("unload", this, false);
+    this.mPrefs.removeObserver("", this);
+  },
+  
+  updateUI: function(regex)
+  {
+    var bars = document.getElementsByTagName("findbar");
+    for (var i=0; i<bars.length; i++)
+    {
+      var checkbox = document.getAnonymousElementByAttribute(bars[i], "anonid", "find-regular-expression");
+      var label = document.getAnonymousElementByAttribute(bars[i], "anonid", "match-regular-expression");
+      checkbox.checked = regex;
+      if (regex)
+      {
+        var bundle = document.getElementById("bundle_findBarRX");
+        label.value = bundle.getString("findbarrx.regex.label");
+      }
+      else
+        label.value = "";
+    }
+  },
+  
+  observe: function (subject, topic, data)
+  {
+    if (data=="regularExpression")
+      this.updateUI(this.mPrefs.getBoolPref(data));
+  },
+  
+  handleEvent: function(event)
+  {
+    switch (event.type)
+    {
+      case "load":
+        this.init();
+        break;
+      case "unload":
+        this.destroy();
+        break;
+    }
+  }
 };
 
 window.addEventListener("load", FBRX, false);
