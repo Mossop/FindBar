@@ -312,12 +312,19 @@ var initModule =
 		{
 			if (outer != null)
 				throw Components.results.NS_ERROR_NO_AGGREGATION;
-#ifdef ${extension.debug}
-			if (!Cc["@blueprintit.co.uk/textextractor;1"])
-			{
-				dump("Falling back to javascript text extractor\n");
+      
+      if (!Cc["@blueprintit.co.uk/textextractor;1"])
+      {
+        var app = Cc["@mozilla.org/xre/app-info;1"]
+                   .getService(Ci.nsIXULRuntime);
+        var msg = Cc["@mozilla.org/scripterror;1"]
+                   .createInstance(Ci.nsIScriptError);
+        msg.init("Find Bar: Unsupported platform "+app.OS+"_"+app.XPCOMABI+", using JS matcher.",
+                 "", "", "", 0, Ci.nsIScriptError.warningFlag, "XUL JavaScript");
+        var console = Cc["@mozilla.org/consoleservice;1"]
+                       .getService(Ci.nsIConsoleService);
+        console.logMessage(msg);
 			}
-#endif
 			var instance = new FBRX_Find();
 			return instance.QueryInterface(iid);
 		}
