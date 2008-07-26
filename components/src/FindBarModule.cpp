@@ -14,9 +14,9 @@
  * The Original Code is /Find Bar/
  *
  * The Initial Developer of the Original Code is
- *      Dave Townsend <dave.townsend@blueprintit.co.uk>.
+ *      Dave Townsend <dtownsend@oxymoronical.com>.
  *
- * Portions created by the Initial Developer are Copyright (C) 2006
+ * Portions created by the Initial Developer are Copyright (C) 2008
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -34,12 +34,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK *****
- *
- * $HeadURL$
- * $LastChangedBy$
- * $Date$
- * $Revision$
- *
  */
 
 #include "nsIGenericFactory.h"
@@ -49,12 +43,12 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(fbTextExtractor)
 
 static nsModuleComponentInfo components[] =
 {
-	{
-		TEXTEXTRACTOR_CLASSNAME, 
-		TEXTEXTRACTOR_CID,
-		TEXTEXTRACTOR_CONTRACTID,
-		fbTextExtractorConstructor,
-	}
+  {
+    TEXTEXTRACTOR_CLASSNAME,
+    TEXTEXTRACTOR_CID,
+    TEXTEXTRACTOR_CONTRACTID,
+    fbTextExtractorConstructor,
+  }
 };
 
 NS_IMPL_NSGETMODULE("FindBarRXModule", components)

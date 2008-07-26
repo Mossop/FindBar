@@ -14,9 +14,9 @@
  * The Original Code is /Find Bar/
  *
  * The Initial Developer of the Original Code is
- *      Dave Townsend <dave.townsend@blueprintit.co.uk>.
+ *      Dave Townsend <dtownsend@oxymoronical.com>.
  *
- * Portions created by the Initial Developer are Copyright (C) 2006
+ * Portions created by the Initial Developer are Copyright (C) 2008
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -34,12 +34,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK *****
- *
- * $HeadURL$
- * $LastChangedBy$
- * $Date$
- * $Revision$
- *
  */
 
 #ifndef _fbTextExtractor_h_
@@ -76,7 +70,7 @@ private:
   nsString mTextContent;
   nsCOMPtr<nsIDOMDocument> mDocument;
   nsTArray<fbNodeInfo> mNodeContent;
-  
+
   void AddTextNode(nsIDOMNode *node, PRInt32 offset);
   void AddTextNode(nsIDOMNode *node, PRInt32 offset, PRInt32 length);
   void WalkPastTree(nsIDOMNode *current, nsIDOMNode *limit, nsIDOMNode **retval);

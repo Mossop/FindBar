@@ -14,9 +14,9 @@
  * The Original Code is /Find Bar/
  *
  * The Initial Developer of the Original Code is
- *      Dave Townsend <dave.townsend@blueprintit.co.uk>.
+ *      Dave Townsend <dtownsend@oxymoronical.com>.
  *
- * Portions created by the Initial Developer are Copyright (C) 2006
+ * Portions created by the Initial Developer are Copyright (C) 2008
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -34,12 +34,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK *****
- *
- * $HeadURL: svn://svn.blueprintit.co.uk/dave/mozilla/firefox/buildid/trunk/components/nsNightlyToolsService.js $
- * $LastChangedBy: dave $
- * $Date: 2005-09-10 19:52:42 +0100 (Sat, 10 Sep 2005) $
- * $Revision: 152 $
- *
  */
 
 #include "nsISupports.idl"
@@ -50,8 +44,8 @@
 interface fbITextExtractor : nsISupports
 {
   readonly attribute AString textContent;
-  
+
 	void init(in nsIDOMDocument document, in nsIDOMRange range);
-	
+
 	nsIDOMRange getTextRange(in long offset, in long length);
 };

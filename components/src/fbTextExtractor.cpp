@@ -14,9 +14,9 @@
  * The Original Code is /Find Bar/
  *
  * The Initial Developer of the Original Code is
- *      Dave Townsend <dave.townsend@blueprintit.co.uk>.
+ *      Dave Townsend <dtownsend@oxymoronical.com>.
  *
- * Portions created by the Initial Developer are Copyright (C) 2006
+ * Portions created by the Initial Developer are Copyright (C) 2008
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -34,12 +34,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK *****
- *
- * $HeadURL$
- * $LastChangedBy$
- * $Date$
- * $Revision$
- *
  */
 
 #include "fbTextExtractor.h"
@@ -71,7 +65,7 @@ NS_IMETHODIMP fbTextExtractor::GetTextContent(nsAString & aTextContent)
 {
   if (!mDocument)
     return NS_ERROR_NOT_INITIALIZED;
-  
+
   aTextContent = mTextContent;
 
   return NS_OK;
@@ -92,7 +86,7 @@ void fbTextExtractor::AddTextNode(nsIDOMNode *node, PRInt32 offset)
     nodeInfo.mNode = node;
 
     mTextContent.Append(text);
-    
+
     mNodeContent.AppendElement(nodeInfo);
   }
 }
@@ -113,7 +107,7 @@ void fbTextExtractor::AddTextNode(nsIDOMNode *node, PRInt32 offset, PRInt32 leng
     nodeInfo.mNode = node;
 
     mTextContent.Append(text);
-    
+
     mNodeContent.AppendElement(nodeInfo);
   }
 }
@@ -136,9 +130,9 @@ void fbTextExtractor::WalkPastTree(nsIDOMNode *current, nsIDOMNode *limit, nsIDO
     }
 
   } while ((!next) && (current)); // Until we find a node or run out of nodes.
-  
+
   NS_ASSERTION(current, "Ran out of nodes before hitting limit");
-  
+
   NS_IF_ADDREF(*retval = next);
 }
 
@@ -149,7 +143,7 @@ void fbTextExtractor::WalkIntoTree(nsIDOMNode *current, nsIDOMNode *limit, nsIDO
   current->GetFirstChild(getter_AddRefs(next)); // Attempt to recurse in
   if (!next)
     WalkPastTree(current, limit, getter_AddRefs(next));
-  
+
   NS_IF_ADDREF(*retval = next);
 }
 
@@ -158,12 +152,12 @@ NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc, nsIDOMRange *aRange)
 {
   if (!aDoc)
     return NS_ERROR_INVALID_ARG;
-    
+
   nsresult rv;
-	
+
   mDocument = nsnull;
   mTextContent = EmptyString();
-  
+
   nsCOMPtr<nsIDOMNode> currentNode;
   nsCOMPtr<nsIDOMNode> end;
   PRInt32 startOffset = 0;
@@ -217,7 +211,7 @@ NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc, nsIDOMRange *aRange)
     aRange->GetStartContainer(getter_AddRefs(currentNode));
     currentNode->GetNodeType(&type);
     aRange->GetStartOffset(&startOffset);
-    
+
     if ((type == nsIDOMNode::ELEMENT_NODE) && (startOffset>0))
     {
       currentNode->GetChildNodes(getter_AddRefs(children));
@@ -244,12 +238,12 @@ NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc, nsIDOMRange *aRange)
     if (NS_SUCCEEDED(rv))
       view = do_QueryInterface(view, &rv);
   }
-  
+
   while (currentNode)
   {
     PRUint16 type;
     currentNode->GetNodeType(&type);
-    
+
     nsCOMPtr<nsIDOMNode> nextNode;
     if ((type == nsIDOMNode::TEXT_NODE) || (type == nsIDOMNode::CDATA_SECTION_NODE))
     {
@@ -262,7 +256,7 @@ NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc, nsIDOMRange *aRange)
       startOffset = 0;
       continue;
     }
-    
+
     startOffset = 0;
     if (type == nsIDOMNode::ELEMENT_NODE)
     {
@@ -284,12 +278,12 @@ NS_IMETHODIMP fbTextExtractor::Init(nsIDOMDocument *aDoc, nsIDOMRange *aRange)
         }
       }
     }
-    
+
     WalkIntoTree(currentNode, end, getter_AddRefs(nextNode));
     currentNode = nextNode;
   }
   mDocument = aDoc;
-  
+
   return NS_OK;
 }
 
@@ -297,11 +291,11 @@ PRUint32 fbTextExtractor::GetOffsetPosition(PRInt32 offset, PRInt32 start, PRInt
 {
   if (end <= (start+1))
     return start;
-  
+
   PRInt32 diff = mNodeContent[end].mDocumentOffset-mNodeContent[start].mDocumentOffset;
   PRInt32 offs = offset-mNodeContent[start].mDocumentOffset;
   PRInt32 mid = start+(PRInt32)(offs/(diff*1.0/(end-start)));
-  
+
   if (mNodeContent[mid].mDocumentOffset > offset)
     return GetOffsetPosition(offset, start, mid);
   if ((mNodeContent[mid].mDocumentOffset+mNodeContent[mid].mLength) <= offset)
@@ -322,9 +316,9 @@ NS_IMETHODIMP fbTextExtractor::GetTextRange(PRInt32 offset, PRInt32 length, nsID
 {
   if (!mDocument)
     return NS_ERROR_NOT_INITIALIZED;
-  
+
   nsresult rv;
-	
+
   nsCOMPtr<nsIDOMDocumentRange> docrange = do_QueryInterface(mDocument, &rv);
   if (NS_FAILED(rv)) return rv;
 
@@ -335,12 +329,12 @@ NS_IMETHODIMP fbTextExtractor::GetTextRange(PRInt32 offset, PRInt32 length, nsID
   PRUint32 pos = GetOffsetPosition(offset, 0);
   rv = range->SetStart(mNodeContent[pos].mNode, offset-mNodeContent[pos].mDocumentOffset+mNodeContent[pos].mNodeOffset);
   if (NS_FAILED(rv)) return rv;
-  
+
   pos = GetOffsetPosition(offset+length, pos);
   rv = range->SetEnd(mNodeContent[pos].mNode, offset+length-mNodeContent[pos].mDocumentOffset+mNodeContent[pos].mNodeOffset);
   if (NS_FAILED(rv)) return rv;
-  
+
   NS_ADDREF(*retval = range);
-  
+
   return NS_OK;
 }

@@ -6,7 +6,7 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>${extension.guid}</em:id>
     <em:version>${extension.fullversion}</em:version>
-    
+
     <!-- Firefox version --> 
     <em:targetApplication>
       <Description>
@@ -19,9 +19,9 @@
     <!-- Thunderbird -->
     <em:targetApplication>
       <Description>
-      <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-      <em:minVersion>2.0</em:minVersion>
-      <em:maxVersion>3.0a1</em:maxVersion>
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+        <em:minVersion>2.0</em:minVersion>
+        <em:maxVersion>3.0a1</em:maxVersion>
       </Description>
     </em:targetApplication>
     
@@ -32,6 +32,6 @@
     <em:contributor>Brian Kroth</em:contributor>
 
     <em:homepageURL>http://www.oxymoronical.com/web/firefox/${extension.name}</em:homepageURL>
-    
+
   </Description>      
 </RDF>

@@ -1,9 +1,9 @@
-content			findbarrx																					${extension.chromebase}/content/
-skin				findbarrx					classic/1.0											${extension.chromebase}/skin/
-locale			findbarrx					en-US														${extension.chromebase}/locale/en-US/
+content     findbarrx                                         ${extension.chromebase}/content/
+skin        findbarrx         classic/1.0                     ${extension.chromebase}/skin/
+locale      findbarrx         en-US                           ${extension.chromebase}/locale/en-US/
 
-overlay			chrome://browser/content/browser.xul							chrome://findbarrx/content/browserOverlay.xul	     appversion<3.0a2pre
-overlay			chrome://browser/content/browser.xul							chrome://findbarrx/content/bindingOverlay.xul	     appversion>=3.0a2pre
+overlay     chrome://browser/content/browser.xul              chrome://findbarrx/content/browserOverlay.xul      appversion<3.0a2pre
+overlay     chrome://browser/content/browser.xul              chrome://findbarrx/content/bindingOverlay.xul      appversion>=3.0a2pre
 style       chrome://browser/content/browser.xul              chrome://findbarrx/content/findbarrx.css           appversion>=3.0a2pre
 
 overlay     chrome://messenger/content/mailWindowOverlay.xul  chrome://findbarrx/content/browserOverlay.xul      appversion<3.0a2pre
