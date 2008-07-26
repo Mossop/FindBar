@@ -57,52 +57,54 @@
   <binding id="findbarrx" name="findbarrx"
            extends="chrome://global/content/bindings/findbar.xml#findbar">
     <content align="center" hidden="true">
-      <xul:toolbarbutton anonid="find-closebutton"
-                         class="findbar-closebutton"
-                         tooltiptext="&findCloseButton.tooltip;"
-                         oncommand="close();"/>
-      <xul:label anonid="find-label" class="findbar-find-fast"/>
-      <xul:hbox anonid="find-field-container"
-                class="find-field-container findbar-find-fast">
-        <xul:textbox class="findbar-textbox" anonid="findbar-textbox"/>
+      <xul:hbox anonid="findbar-container" class="findbar-container" flex="1" align="center">
+        <xul:toolbarbutton anonid="find-closebutton"
+                           class="findbar-closebutton"
+                           tooltiptext="&findCloseButton.tooltip;"
+                           oncommand="close();"/>
+        <xul:label anonid="find-label" class="findbar-find-fast"/>
+        <xul:hbox anonid="find-field-container"
+                  class="find-field-container findbar-find-fast">
+          <xul:textbox class="findbar-textbox" anonid="findbar-textbox"/>
+        </xul:hbox>
+        <xul:toolbarbutton anonid="find-next"
+                           class="findbar-find-next"
+                           label="&next.label;"
+                           accesskey="&next.accesskey;"
+                           tooltiptext="&next.tooltip;"
+                           oncommand="onFindAgainCommand(false);"
+                           disabled="true"
+                           xbl:inherits="accesskey=findnextaccesskey"/>
+        <xul:toolbarbutton anonid="find-previous"
+                           class="findbar-find-previous"
+                           label="&previous.label;"
+                           accesskey="&previous.accesskey;"
+                           tooltiptext="&previous.tooltip;"
+                           oncommand="onFindAgainCommand(true);"
+                           disabled="true"
+                           xbl:inherits="accesskey=findpreviousaccesskey"/>
+        <xul:toolbarbutton anonid="highlight"
+                           class="findbar-highlight"
+                           label="&highlight.label;"
+                           accesskey="&highlight.accesskey;"
+                           tooltiptext="&highlight.tooltiptext;"
+                           oncommand="toggleHighlight(!this.checked);"
+                           type="checkbox"
+                           disabled="true"
+                           xbl:inherits="accesskey=highlightaccesskey"/>
+        <xul:checkbox anonid="find-case-sensitive"
+                      oncommand="_setCaseSensitivity(this.checked);"
+                      label="&caseSensitiveCheckbox.label;"
+                      accesskey="&caseSensitiveCheckbox.accesskey;"
+                      xbl:inherits="accesskey=matchcaseaccesskey"/>
+        <xul:checkbox anonid="find-regular-expression" 
+                      oncommand="_setRegularExpression(this.checked);"
+                      label="&findbarrx.regex.checkbox;"/>
+        <xul:label anonid="match-case-status" class="findbar-find-fast"/>
+        <xul:label anonid="match-regular-expression" class="findbar-find-fast"/>
+        <xul:image anonid="find-status-icon" class="find-status-icon"/>
+        <xul:label anonid="find-status" class="findbar-find-status"/>
       </xul:hbox>
-      <xul:toolbarbutton anonid="find-next"
-                         class="findbar-find-next"
-                         label="&next.label;"
-                         accesskey="&next.accesskey;"
-                         tooltiptext="&next.tooltip;"
-                         oncommand="onFindAgainCommand(false);"
-                         disabled="true"
-                         xbl:inherits="accesskey=findnextaccesskey"/>
-      <xul:toolbarbutton anonid="find-previous"
-                         class="findbar-find-previous"
-                         label="&previous.label;"
-                         accesskey="&previous.accesskey;"
-                         tooltiptext="&previous.tooltip;"
-                         oncommand="onFindAgainCommand(true);"
-                         disabled="true"
-                         xbl:inherits="accesskey=findpreviousaccesskey"/>
-      <xul:toolbarbutton anonid="highlight"
-                         class="findbar-highlight"
-                         label="&highlight.label;"
-                         accesskey="&highlight.accesskey;"
-                         tooltiptext="&highlight.tooltiptext;"
-                         oncommand="toggleHighlight(!this.checked);"
-                         type="checkbox"
-                         disabled="true"
-                         xbl:inherits="accesskey=highlightaccesskey"/>
-      <xul:checkbox anonid="find-case-sensitive"
-                    oncommand="_setCaseSensitivity(this.checked);"
-                    label="&caseSensitiveCheckbox.label;"
-                    accesskey="&caseSensitiveCheckbox.accesskey;"
-                    xbl:inherits="accesskey=matchcaseaccesskey"/>
-      <xul:checkbox anonid="find-regular-expression" 
-                    oncommand="_setRegularExpression(this.checked);"
-                    label="&findbarrx.regex.checkbox;"/>
-      <xul:label anonid="match-case-status" class="findbar-find-fast"/>
-      <xul:label anonid="match-regular-expression" class="findbar-find-fast"/>
-      <xul:image anonid="find-status-icon" class="find-status-icon"/>
-      <xul:label anonid="find-status" class="findbar-find-status"/>
     </content>
     
     <implementation>
